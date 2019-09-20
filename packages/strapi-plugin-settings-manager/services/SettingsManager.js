@@ -846,9 +846,9 @@ module.exports = {
 
     let connector;
     if (_.indexOf(bookshelfClients, client) !== -1)
-      connector = 'strapi-hook-bookshelf';
+      connector = 'strapi-connector-bookshelf';
     if (_.indexOf(mongooseClients, client) !== -1)
-      connector = 'strapi-hook-mongoose';
+      connector = 'strapi-connector-mongoose';
     if (_.indexOf(redisClients, client) !== -1) connector = 'strapi-hook-redis';
 
     return connector;
@@ -1163,8 +1163,8 @@ module.exports = {
 
   cleanDependency: (env, config) => {
     const availableConnectors = [
-      'strapi-hook-mongoose',
-      'strapi-hook-bookshelf',
+      'strapi-connector-mongoose',
+      'strapi-connector-bookshelf',
       'strapi-hook-redis',
     ];
     let usedConnectors = [];

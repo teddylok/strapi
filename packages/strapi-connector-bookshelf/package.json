@@ -1,5 +1,5 @@
 {
-  "name": "strapi-hook-bookshelf",
+  "name": "strapi-connector-bookshelf",
   "version": "3.0.0-beta.16.8",
   "description": "Bookshelf hook for the Strapi framework",
   "homepage": "http://strapi.io",
