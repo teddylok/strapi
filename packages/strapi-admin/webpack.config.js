@@ -6,6 +6,8 @@ const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const DuplicatePckgChecker = require('duplicate-package-checker-webpack-plugin');
+const { styles } = require('@ckeditor/ckeditor5-dev-utils');
+const CKEditorWebpackPlugin = require('@ckeditor/ckeditor5-dev-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const WebpackBar = require('webpackbar');
 const isWsl = require('is-wsl');
@@ -143,6 +145,7 @@ module.exports = ({
         {
           test: /\.css$/,
           include: /node_modules/,
+          exclude: /ckeditor5-[^/\\]+[/\\]theme[/\\].+\.css/,
           use: [
             {
               loader: require.resolve('style-loader'),
@@ -190,6 +193,10 @@ module.exports = ({
         },
         {
           test: /\.(svg|eot|otf|ttf|woff|woff2)$/,
+          exclude: [
+            /ckeditor5-[^/\\]+[/\\]theme[/\\]icons[/\\][^/\\]+\.svg$/,
+            /ckeditor5-[^/\\]+[/\\]theme[/\\].+\.css/,
+          ],
           use: 'file-loader',
         },
         {
@@ -228,6 +235,30 @@ module.exports = ({
             limit: 10000,
           },
         },
+        {
+          test: /ckeditor5-[^/\\]+[/\\]theme[/\\]icons[/\\][^/\\]+\.svg$/,
+          use: ['raw-loader'],
+        },
+        {
+          test: /ckeditor5-[^/\\]+[/\\]theme[/\\].+\.css/,
+          use: [
+            {
+              loader: 'style-loader',
+              // options: {
+              //   injectType: 'singletonStyleTag'
+              // }
+            },
+            {
+              loader: 'postcss-loader',
+              options: styles.getPostCssConfig({
+                themeImporter: {
+                  themePath: require.resolve('@ckeditor/ckeditor5-theme-lark'),
+                },
+                minify: true,
+              }),
+            },
+          ],
+        },
       ],
     },
     resolve: {
@@ -252,6 +283,10 @@ module.exports = ({
         BACKEND_URL: JSON.stringify(options.backend),
         MODE: JSON.stringify(URLs.mode), // Allow us to define the public path for the plugins assets.
         PUBLIC_PATH: JSON.stringify(options.publicPath),
+      }),
+      new CKEditorWebpackPlugin({
+        // See https://ckeditor.com/docs/ckeditor5/latest/features/ui-language.html
+        language: 'en',
       }),
 
       ...webpackPlugins,

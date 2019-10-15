@@ -4,6 +4,7 @@
   "version": "3.0.0-beta.16.8",
   "description": "A Strapi application.",
   "scripts": {
+    "dev": "strapi develop",
     "develop": "strapi develop",
     "start": "strapi start",
     "build": "strapi build",
@@ -14,6 +15,8 @@
     "lodash": "^4.17.5",
     "mysql": "^2.17.1",
     "pg": "^7.10.0",
+    "postcss-loader": "^3.0.0",
+    "raw-loader": "3",
     "sqlite3": "^4.0.6",
     "strapi": "3.0.0-beta.16.8",
     "strapi-admin": "3.0.0-beta.16.8",
