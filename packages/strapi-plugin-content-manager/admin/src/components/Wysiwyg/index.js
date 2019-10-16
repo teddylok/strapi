@@ -13,12 +13,34 @@ import Bold from '@ckeditor/ckeditor5-basic-styles/src/bold';
 import Italic from '@ckeditor/ckeditor5-basic-styles/src/italic';
 import Underline from '@ckeditor/ckeditor5-basic-styles/src/underline';
 import Strikethrough from '@ckeditor/ckeditor5-basic-styles/src/strikethrough';
-// import Code from '@ckeditor/ckeditor5-basic-styles/src/code';
-// import Subscript from '@ckeditor/ckeditor5-basic-styles/src/subscript';
-// import Superscript from '@ckeditor/ckeditor5-basic-styles/src/superscript';
+import Code from '@ckeditor/ckeditor5-basic-styles/src/code';
+import Subscript from '@ckeditor/ckeditor5-basic-styles/src/subscript';
+import Superscript from '@ckeditor/ckeditor5-basic-styles/src/superscript';
+import RemoveFormat from '@ckeditor/ckeditor5-remove-format/src/removeformat';
+
+// alignment
+import Alignment from '@ckeditor/ckeditor5-alignment/src/alignment';
+
+import BlockQuote from '@ckeditor/ckeditor5-block-quote/src/blockquoteediting';
 
 // font
 import FontColor from '@ckeditor/ckeditor5-font/src/fontcolor';
+import FontBackgroundColor from '@ckeditor/ckeditor5-font/src/fontbackgroundcolor';
+
+// list
+import ListEditing from '@ckeditor/ckeditor5-list/src/listediting';
+
+// indent
+import Indent from '@ckeditor/ckeditor5-indent/src/indent';
+
+// heading
+import Heading from '@ckeditor/ckeditor5-heading/src/heading';
+
+// link
+import Link from '@ckeditor/ckeditor5-link/src/link';
+
+// media embed
+import MediaEmbed from '@ckeditor/ckeditor5-media-embed/src/mediaembed';
 
 // table
 import Table from '@ckeditor/ckeditor5-table/src/table';
@@ -32,13 +54,13 @@ import ImageTextAlternative from '@ckeditor/ckeditor5-image/src/imagetextalterna
 import ImageResize from '@ckeditor/ckeditor5-image/src/imageresize';
 import ImageUpload from '@ckeditor/ckeditor5-image/src/imageupload';
 
+// file
 import FileRepository from '@ckeditor/ckeditor5-upload/src/filerepository';
 import SimpleUploadAdapter from '@ckeditor/ckeditor5-upload/src/adapters/simpleuploadadapter';
 
 class Wysiwyg extends React.Component {
   constructor(props) {
     super(props);
-    console.log('props', props);
   }
 
   render() {
@@ -62,11 +84,23 @@ class Wysiwyg extends React.Component {
         SimpleUploadAdapter,
         Essentials,
         Paragraph,
+        BlockQuote,
         Bold,
         Italic,
         FontColor,
+        FontBackgroundColor,
         Underline,
         Strikethrough,
+        Code,
+        Subscript,
+        Superscript,
+        RemoveFormat,
+        Alignment,
+        Heading,
+        Link,
+        Indent,
+        MediaEmbed,
+        ListEditing,
         Image,
         ImageToolbar,
         ImageStyle,
@@ -77,19 +111,36 @@ class Wysiwyg extends React.Component {
         TableToolbar,
       ],
       toolbar: [
-        'Undo',
-        'Redo',
+        'undo',
+        'redo',
         '|',
-        'Bold',
-        'Italic',
-        'FontColor',
+        'heading',
+        'bold',
+        'italic',
+        'underline',
+        'strikethrough',
         '|',
-        'Underline',
-        'Strikethrough',
+        'fontColor',
+        'fontBackgroundColor',
+        'link',
+        '|',
+        'bulletedList',
+        'numberedList',
+        '|',
+        'code',
+        'blockQuote',
+        'subscript',
+        'superscript',
+        'removeFormat',
+        '|',
+        'alignment',
+        'outdent',
+        'indent',
         '|',
         'insertTable',
         '|',
-        'ImageUpload',
+        'imageUpload',
+        'mediaEmbed',
       ],
       image: {
         styles: ['full', 'alignLeft', 'alignRight'],
@@ -111,33 +162,10 @@ class Wysiwyg extends React.Component {
           Authorization: `Bearer ${jwtToken}`,
         },
       },
-      // plugins: [ Essentials, Bold, Italic ],
-      // extraPlugins: [ Code ],
-      // toolbar: {
-      //   items: [
-      //     'heading', 'bulletedList', 'numberedList', 'fontFamily', 'undo', 'redo', '|', 'code', 'TextColor', 'highlight',
-      //     '/',
-      //     'bold', 'italic',
-      //   ]
-      // }
-      // plugins: [ Code ],
-      // toolbar: [
-      //   { name: 'document', items: [ 'Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates' ] },
-      //   { name: 'clipboard', items: [ 'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo' ] },
-      //   { name: 'editing', items: [ 'Find', 'Replace', '-', 'SelectAll', '-', 'Scayt' ] },
-      //   { name: 'forms', items: [ 'Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField' ] },
-      //   '/',
-      //   { name: 'basicstyles', items: [ 'Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'CopyFormatting', 'RemoveFormat' ] },
-      //   { name: 'paragraph', items: [ 'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language' ] },
-      //   { name: 'links', items: [ 'Link', 'Unlink', 'Anchor' ] },
-      //   { name: 'insert', items: [ 'Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe' ] },
-      //   '/',
-      //   { name: 'styles', items: [ 'Styles', 'Format', 'Font', 'FontSize' ] },
-      //   { name: 'colors', items: [ 'TextColor', 'BGColor' ] },
-      //   { name: 'tools', items: [ 'Maximize', 'ShowBlocks' ] },
-      //   { name: 'about', items: [ 'About' ] }
-      // ],
-      // removeButtons: 'NewPage,Print,Preview,Templates,Save,Cut,Copy,Paste,PasteText,PasteFromWord,Find,Replace,SelectAll,Scayt,Checkbox,Radio,TextField,Textarea,Select,Button,ImageButton,HiddenField,Form,CreateDiv,Language,Anchor,Flash,Smiley,PageBreak,Iframe,About'
+      indentBlock: {
+        offset: 1,
+        unit: 'em',
+      },
     };
 
     return (
