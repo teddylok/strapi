@@ -52,6 +52,10 @@ class Wysiwyg extends React.Component {
       });
     };
 
+    const jwtToken =
+      sessionStorage.getItem('jwtToken').replace(/"/g, '') ||
+      localStorage.getItem('jwtToken').replace(/"/g, '') ||
+      '';
     const editorConfiguration = {
       plugins: [
         FileRepository,
@@ -104,9 +108,7 @@ class Wysiwyg extends React.Component {
         uploadUrl: '/upload',
         headers: {
           'X-CSRF-TOKEN': 'CSFR-Token',
-          Authorization: `Bearer ${localStorage
-            .getItem('jwtToken')
-            .replace(/"/g, '')}`,
+          Authorization: `Bearer ${jwtToken}`,
         },
       },
       // plugins: [ Essentials, Bold, Italic ],

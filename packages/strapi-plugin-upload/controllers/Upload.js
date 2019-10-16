@@ -41,7 +41,12 @@ module.exports = {
 
     // Extract optional relational data.
     const { refId, ref, source, field, path } = ctx.request.body || {};
-    const { files = {} } = ctx.request.files || {};
+    let { files = {}, upload = {} } = ctx.request.files || {};
+    const isCkEditorUpload = !!upload;
+
+    if (upload) {
+      files = upload;
+    }
 
     if (_.isEmpty(files)) {
       return ctx.badRequest(null, [
@@ -99,21 +104,24 @@ module.exports = {
     }
 
     const uploadedFiles = await uploadService.upload(enhancedFiles, config);
+    const handleUploadFiles = file => {
+      // If is local server upload, add backend host as prefix
+      if (file.url && file.url[0] === '/') {
+        file.url = strapi.config.url + file.url;
+      }
+
+      if (_.isArray(file.related)) {
+        file.related = file.related.map(obj => obj.ref || obj);
+      }
+
+      return file;
+    };
 
     // Send 200 `ok`
     ctx.send(
-      uploadedFiles.map(file => {
-        // If is local server upload, add backend host as prefix
-        if (file.url && file.url[0] === '/') {
-          file.url = strapi.config.url + file.url;
-        }
-
-        if (_.isArray(file.related)) {
-          file.related = file.related.map(obj => obj.ref || obj);
-        }
-
-        return file;
-      })
+      isCkEditorUpload
+        ? handleUploadFiles(uploadedFiles[0])
+        : uploadedFiles.map(file => handleUploadFiles(file))
     );
   },
 
