@@ -21,14 +21,15 @@ import RemoveFormat from '@ckeditor/ckeditor5-remove-format/src/removeformat';
 // alignment
 import Alignment from '@ckeditor/ckeditor5-alignment/src/alignment';
 
-import BlockQuote from '@ckeditor/ckeditor5-block-quote/src/blockquoteediting';
+// block quote
+import BlockQuote from '@ckeditor/ckeditor5-block-quote/src/blockquote';
 
 // font
 import FontColor from '@ckeditor/ckeditor5-font/src/fontcolor';
 import FontBackgroundColor from '@ckeditor/ckeditor5-font/src/fontbackgroundcolor';
 
 // list
-import ListEditing from '@ckeditor/ckeditor5-list/src/listediting';
+import List from '@ckeditor/ckeditor5-list/src/list';
 
 // indent
 import Indent from '@ckeditor/ckeditor5-indent/src/indent';
@@ -100,7 +101,7 @@ class Wysiwyg extends React.Component {
         Link,
         Indent,
         MediaEmbed,
-        ListEditing,
+        List,
         Image,
         ImageToolbar,
         ImageStyle,
@@ -124,20 +125,20 @@ class Wysiwyg extends React.Component {
         'fontBackgroundColor',
         'link',
         '|',
+        'alignment',
+        'outdent',
+        'indent',
+        '|',
         'bulletedList',
         'numberedList',
+        '|',
+        'insertTable',
         '|',
         'code',
         'blockQuote',
         'subscript',
         'superscript',
         'removeFormat',
-        '|',
-        'alignment',
-        'outdent',
-        'indent',
-        '|',
-        'insertTable',
         '|',
         'imageUpload',
         'mediaEmbed',
