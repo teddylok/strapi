@@ -1,221 +1,202 @@
-/**
- *
- * WysiwygWithErrors
- *
- */
-
 import React from 'react';
 import PropTypes from 'prop-types';
-import { isEmpty, isFunction } from 'lodash';
-import cn from 'classnames';
 
-import {
-  Label,
-  InputDescription,
-  InputErrors,
-  validateInput,
-} from 'strapi-helper-plugin';
-
-import Wysiwyg from '../Wysiwyg';
-
+import Editor from '@ckeditor/ckeditor5-editor-classic/src/classiceditor';
+import CKEditor from '@ckeditor/ckeditor5-react';
 import styles from './styles.scss';
 
-class WysiwygWithErrors extends React.Component {
-  // eslint-disable-line react/prefer-stateless-function
-  state = { errors: [], hasInitialValue: false };
+import Essentials from '@ckeditor/ckeditor5-essentials/src/essentials';
+import Paragraph from '@ckeditor/ckeditor5-paragraph/src/paragraph';
 
-  componentDidMount() {
-    const { value, errors } = this.props;
+// basic styles
+import Bold from '@ckeditor/ckeditor5-basic-styles/src/bold';
+import Italic from '@ckeditor/ckeditor5-basic-styles/src/italic';
+import Underline from '@ckeditor/ckeditor5-basic-styles/src/underline';
+import Strikethrough from '@ckeditor/ckeditor5-basic-styles/src/strikethrough';
+import Code from '@ckeditor/ckeditor5-basic-styles/src/code';
+import Subscript from '@ckeditor/ckeditor5-basic-styles/src/subscript';
+import Superscript from '@ckeditor/ckeditor5-basic-styles/src/superscript';
+import RemoveFormat from '@ckeditor/ckeditor5-remove-format/src/removeformat';
 
-    // Prevent the input from displaying an error when the user enters and leaves without filling it
-    if (!isEmpty(value)) {
-      this.setState({ hasInitialValue: true });
-    }
+// alignment
+import Alignment from '@ckeditor/ckeditor5-alignment/src/alignment';
 
-    // Display input error if it already has some
-    if (!isEmpty(errors)) {
-      this.setState({ errors });
-    }
+// block quote
+import BlockQuote from '@ckeditor/ckeditor5-block-quote/src/blockquote';
+
+// font
+import FontColor from '@ckeditor/ckeditor5-font/src/fontcolor';
+import FontBackgroundColor from '@ckeditor/ckeditor5-font/src/fontbackgroundcolor';
+
+// list
+import List from '@ckeditor/ckeditor5-list/src/list';
+
+// indent
+import Indent from '@ckeditor/ckeditor5-indent/src/indent';
+
+// heading
+import Heading from '@ckeditor/ckeditor5-heading/src/heading';
+
+// link
+import Link from '@ckeditor/ckeditor5-link/src/link';
+
+// media embed
+import MediaEmbed from '@ckeditor/ckeditor5-media-embed/src/mediaembed';
+
+// table
+import Table from '@ckeditor/ckeditor5-table/src/table';
+import TableToolbar from '@ckeditor/ckeditor5-table/src/tabletoolbar';
+
+// image
+import Image from '@ckeditor/ckeditor5-image/src/image';
+import ImageToolbar from '@ckeditor/ckeditor5-image/src/imagetoolbar';
+import ImageStyle from '@ckeditor/ckeditor5-image/src/imagestyle';
+import ImageTextAlternative from '@ckeditor/ckeditor5-image/src/imagetextalternative';
+import ImageResize from '@ckeditor/ckeditor5-image/src/imageresize';
+import ImageUpload from '@ckeditor/ckeditor5-image/src/imageupload';
+
+// file
+import FileRepository from '@ckeditor/ckeditor5-upload/src/filerepository';
+import SimpleUploadAdapter from '@ckeditor/ckeditor5-upload/src/adapters/simpleuploadadapter';
+
+class Wysiwyg extends React.Component {
+  constructor(props) {
+    super(props);
   }
-
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    // Show required error if the input's value is received after the compo is mounted
-    if (!isEmpty(nextProps.value) && !this.state.hasInitialValue) {
-      this.setState({ hasInitialValue: true });
-    }
-
-    // Check if errors have been updated during validations
-    if (nextProps.didCheckErrors !== this.props.didCheckErrors) {
-      // Remove from the state the errors that have already been set
-      const errors = isEmpty(nextProps.errors) ? [] : nextProps.errors;
-      this.setState({ errors });
-    }
-  }
-
-  /**
-   * Set the errors depending on the validations given to the input
-   * @param  {Object} target
-   */
-  handleBlur = ({ target }) => {
-    // Prevent from displaying error if the input is initially isEmpty
-    if (!isEmpty(target.value) || this.state.hasInitialValue) {
-      const errors = validateInput(target.value, this.props.validations);
-      this.setState({ errors, hasInitialValue: true });
-    }
-  };
 
   render() {
-    const {
-      autoFocus,
-      className,
-      customBootstrapClass,
-      deactivateErrorHighlight,
-      disabled,
-      errorsClassName,
-      errorsStyle,
-      inputClassName,
-      inputDescription,
-      inputDescriptionClassName,
-      inputStyle,
-      label,
-      labelClassName,
-      labelStyle,
-      name,
-      noErrorsDescription,
-      onBlur,
-      onChange,
-      placeholder,
-      resetProps,
-      style,
-      tabIndex,
-      value,
-    } = this.props;
-    const handleBlur = isFunction(onBlur) ? onBlur : this.handleBlur;
+    const onChange = (event, editor) => {
+      this.props.onChange({
+        target: {
+          name: this.props.name,
+          type: this.props.type,
+          value: editor.getData(),
+        },
+      });
+    };
 
-    let spacer = !isEmpty(inputDescription) ? (
-      <div style={{ height: '.4rem' }} />
-    ) : (
-      <div />
-    );
-
-    if (!noErrorsDescription && !isEmpty(this.state.errors)) {
-      spacer = <div />;
-    }
+    const jwtToken =
+      sessionStorage.getItem('jwtToken').replace(/"/g, '') ||
+      localStorage.getItem('jwtToken').replace(/"/g, '') ||
+      '';
+    const editorConfiguration = {
+      plugins: [
+        FileRepository,
+        SimpleUploadAdapter,
+        Essentials,
+        Paragraph,
+        BlockQuote,
+        Bold,
+        Italic,
+        FontColor,
+        FontBackgroundColor,
+        Underline,
+        Strikethrough,
+        Code,
+        Subscript,
+        Superscript,
+        RemoveFormat,
+        Alignment,
+        Heading,
+        Link,
+        Indent,
+        MediaEmbed,
+        List,
+        Image,
+        ImageToolbar,
+        ImageStyle,
+        ImageTextAlternative,
+        ImageResize,
+        ImageUpload,
+        Table,
+        TableToolbar,
+      ],
+      toolbar: [
+        'undo',
+        'redo',
+        '|',
+        'heading',
+        'bold',
+        'italic',
+        'underline',
+        'strikethrough',
+        '|',
+        'fontColor',
+        'fontBackgroundColor',
+        'link',
+        '|',
+        'alignment',
+        'outdent',
+        'indent',
+        '|',
+        'bulletedList',
+        'numberedList',
+        '|',
+        'insertTable',
+        '|',
+        'code',
+        'blockQuote',
+        'subscript',
+        'superscript',
+        'removeFormat',
+        '|',
+        'imageUpload',
+        'mediaEmbed',
+      ],
+      image: {
+        styles: ['full', 'alignLeft', 'alignRight'],
+        toolbar: [
+          'imageTextAlternative',
+          '|',
+          'imageStyle:alignLeft',
+          'imageStyle:full',
+          'imageStyle:alignRight',
+        ],
+      },
+      table: {
+        contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells'],
+      },
+      simpleUpload: {
+        uploadUrl: '/upload',
+        headers: {
+          'X-CSRF-TOKEN': 'CSFR-Token',
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      },
+      indentBlock: {
+        offset: 1,
+        unit: 'em',
+      },
+    };
 
     return (
-      <div
-        className={cn(
-          styles.containerWysiwyg,
-          customBootstrapClass,
-          !isEmpty(className) && className
-        )}
-        style={style}
-      >
-        <Label
-          className={labelClassName}
-          htmlFor={name}
-          message={label}
-          style={labelStyle}
-        />
-        <Wysiwyg
-          autoFocus={autoFocus}
-          className={inputClassName}
-          disabled={disabled}
-          deactivateErrorHighlight={deactivateErrorHighlight}
-          error={!isEmpty(this.state.errors)}
-          name={name}
-          onBlur={handleBlur}
+      <div className={styles.richTextEditorContainer}>
+        <CKEditor
+          editor={Editor}
+          config={editorConfiguration}
+          data={this.props.value}
           onChange={onChange}
-          placeholder={placeholder}
-          resetProps={resetProps}
-          style={inputStyle}
-          tabIndex={tabIndex}
-          value={value}
+          ref={this.props.setRef}
         />
-        <InputDescription
-          className={inputDescriptionClassName}
-          message={inputDescription}
-          style={!isEmpty(inputDescription) ? { marginTop: '1.4rem' } : {}}
-        />
-        <InputErrors
-          className={errorsClassName}
-          errors={(!noErrorsDescription && this.state.errors) || []}
-          name={name}
-          style={errorsStyle}
-        />
-        {spacer}
       </div>
     );
   }
 }
 
-WysiwygWithErrors.defaultProps = {
-  autoFocus: false,
-  className: '',
-  customBootstrapClass: 'col-md-12',
-  deactivateErrorHighlight: false,
-  didCheckErrors: false,
-  disabled: false,
-  errors: [],
-  errorsClassName: '',
-  errorsStyle: {},
-  inputClassName: '',
-  inputDescription: '',
-  inputDescriptionClassName: '',
-  inputStyle: {},
-  label: '',
-  labelClassName: '',
-  labelStyle: {},
-  noErrorsDescription: false,
-  onBlur: false,
-  placeholder: '',
-  resetProps: false,
-  style: {},
-  tabIndex: '0',
-  validations: {},
+Wysiwyg.defaultProps = {
+  setRef: () => {},
+  onChange: () => {},
+  name: '',
+  type: '',
+  value: '',
 };
 
-WysiwygWithErrors.propTypes = {
-  autoFocus: PropTypes.bool,
-  className: PropTypes.string,
-  customBootstrapClass: PropTypes.string,
-  deactivateErrorHighlight: PropTypes.bool,
-  didCheckErrors: PropTypes.bool,
-  disabled: PropTypes.bool,
-  errors: PropTypes.array,
-  errorsClassName: PropTypes.string,
-  errorsStyle: PropTypes.object,
-  inputClassName: PropTypes.string,
-  inputDescription: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.func,
-    PropTypes.shape({
-      id: PropTypes.string,
-      params: PropTypes.object,
-    }),
-  ]),
-  inputDescriptionClassName: PropTypes.string,
-  inputStyle: PropTypes.object,
-  label: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.func,
-    PropTypes.shape({
-      id: PropTypes.string,
-      params: PropTypes.object,
-    }),
-  ]),
-  labelClassName: PropTypes.string,
-  labelStyle: PropTypes.object,
-  name: PropTypes.string.isRequired,
-  noErrorsDescription: PropTypes.bool,
-  onBlur: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
-  onChange: PropTypes.func.isRequired,
-  placeholder: PropTypes.string,
-  resetProps: PropTypes.bool,
-  style: PropTypes.object,
-  tabIndex: PropTypes.string,
-  validations: PropTypes.object,
-  value: PropTypes.string.isRequired,
+Wysiwyg.propTypes = {
+  setRef: PropTypes.func,
+  onChange: PropTypes.func,
+  name: PropTypes.string,
+  type: PropTypes.string,
+  value: PropTypes.string,
 };
 
-export default WysiwygWithErrors;
+export default Wysiwyg;
